@@ -113,7 +113,6 @@ def invinsiblity_over():
 def seed_collosion():
     if ball.xcor() + 2 > seed.xcor() - 10 and ball.xcor() - 2 < seed.xcor() + 10:
         if ball.ycor() + 2 >seed.ycor() - 10 and ball.ycor() - 2 < seed.ycor() + 10:
-            print('incin')
             seed.eaten = 'yes'
             seed.goto(1000,1000)
             ball.invinsible = 'yes'
@@ -121,6 +120,7 @@ def seed_collosion():
             ball.shape('ball_invinsible.gif')
             window.ontimer(invinsiblity_over,10000)
             #summon_seed()
+
 
 
 
@@ -150,10 +150,8 @@ def time_over():
 def size():
     if b.l > 4:
         b.l -= 0.01
-        #print(b.l)
         window.ontimer(size,1)
-    else:
-        print('size zero')
+
 def boost_over():
     ball.pensize(0)
     window.ontimer(ball.clear, 2000)
@@ -163,6 +161,8 @@ def boost_over():
     b.l = 10
     window.ontimer(time_over,10000)
     size()
+    if ball.shape() == 'ball_invisible.gif':
+        ball.shape('ball.gif')
 
     
     
@@ -200,12 +200,22 @@ def over(x,y):
 
 #keys
 window.listen()
+#alphabets
 window.onkeypress(up, 'w')
 window.onkeypress(down, 's')
 window.onkeypress(left, 'a')
 window.onkeypress(right, 'd')
-window.onkeypress(stop,'f')
-window.onkeypress(boost,'l')
+#window.onkeypress(stop,'c')
+window.onkeypress(boost,'f')
+
+#arrow keys
+
+window.onkeypress(up, 'Up')
+window.onkeypress(down, 'Down')
+window.onkeypress(left, 'Left')
+window.onkeypress(right, 'Right')
+#window.onkeypress(stop,'c')
+window.onkeypress(boost,'0')
 
 ball.onclick(over)
 
@@ -213,7 +223,6 @@ ball.onclick(over)
 window.ontimer(time_over,5000)
 ###############################################################################################################################
 def position():
-    print(ball.xcor(),ball.ycor())
     window.ontimer(position,1000)
 timer = 0
 score = 0
@@ -238,13 +247,14 @@ while ball.a:
 #################################################################################################################################
     
     b.shapesize(b.l,b.w)
-    #print(ball.status)
     if ball.status == 'no':
         b.l = 4
         b.color('green')
+    else:
+        b.color('red')
     if ball.direction != 'stop':
         score += 1
-    print(score)
+
 
 
 
