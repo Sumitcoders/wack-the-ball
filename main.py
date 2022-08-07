@@ -1,3 +1,4 @@
+import winsound
 import screens
 import turtle
 import random
@@ -84,6 +85,12 @@ b.w = 0.5
 
 #invinsiblity seed
 ###################################################################################################
+window.addshape('images/mystry.gif')
+window.addshape('images/mystry_1.gif')
+
+shape = ['images/mystry.gif','images/mystry_1.gif']
+
+
 
 seed = window.Turtle()
 seed.shape('square')
@@ -91,12 +98,20 @@ seed.color('#f90233')
 #seed.hideturtle()
 seed.penup()
 seed.speed(1000)
-seed.shapesize(1,1)
+# seed.shapesize(1.6,1.6)
 seed.goto(1000,1000)
 seed.eaten = 'yes'
+seed.x_s = 0
 def write(msg):
     txt.write(msg,align='center',font=('Mono space', 14, 'italic'))
     window.ontimer(txt.clear,3000)
+def shape_seed():
+    if seed.x_s < len(shape):
+        seed.shape(shape[seed.x_s])
+        seed.x_s += 1
+        if seed.x_s == len(shape):
+            seed.x_s = 0
+    window.ontimer(shape_seed,500)
 
 def summon_seed():
     x = random.randint(-6,6)
@@ -227,6 +242,7 @@ def position():
 timer = 0
 score = 0
 #position()
+shape_seed()
 ################################################################################################################################
 while ball.a:
 #################################################################################################################################
@@ -235,8 +251,8 @@ while ball.a:
             timer += 10
             
         timer += 1
-        if timer > 2000:
-            if timer > random.randint(2000,2500):
+        if timer > 200:
+            if timer > random.randint(200,250):
                 timer = 0
                 summon_seed()
 
