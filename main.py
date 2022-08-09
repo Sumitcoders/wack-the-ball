@@ -1,4 +1,4 @@
-import winsound
+import time
 import screens
 import turtle
 import random
@@ -66,6 +66,50 @@ ball.penup()
 ball.a = True
 ball.status = 'yes'
 ball.invinsible = 'no'
+ball.heart = 3
+
+#hearts
+#````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+window.addshape('images/heart.gif')
+
+heart = window.Turtle()
+heart.penup()
+heart.speed(0)
+heart.shape('images/heart.gif')
+heart.goto(500,330)
+heart_1 = window.Turtle()
+heart_1.penup()
+heart_1.speed(0)
+heart_1.shape('images/heart.gif')
+heart_1.goto(520,330)
+heart_2 = window.Turtle()
+heart_2.penup()
+heart_2.speed(0)
+heart_2.shape('images/heart.gif')
+heart_2.goto(540,330)
+
+
+def heart_count():
+    if ball.heart == 3:
+        heart.showturtle()
+        heart_1.showturtle
+        heart_2.showturtle()
+    elif ball.heart == 2:
+        heart.showturtle()
+        heart_1.showturtle
+        heart_2.hideturtle()
+    elif ball.heart == 1:
+        heart.showturtle()
+        heart_1.hideturtle()
+        heart_2.hideturtle()
+    elif ball.heart == 0:
+        heart.hideturtle()
+        heart_1.hideturtle()
+        heart_2.hideturtle()
+    else:
+        exit()
+
+#````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 
 
 
@@ -207,8 +251,17 @@ def boost():
 
 def over(x,y):
     if ball.invinsible != 'yes':
-        ball.a = False
-        exit()
+        ball.heart -= 1
+        heart_count()
+        if ball.heart == 0:
+            ball.hideturtle()
+            write('GAME OVER')
+            time.sleep(3)
+            ball.a = False
+            exit()
+
+
+
     else:
         write('The ball is now invinsible')
         
