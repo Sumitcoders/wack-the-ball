@@ -2,6 +2,8 @@ import time
 import screens
 import turtle
 import random
+import pyautogui as pg
+
 
 
 window = turtle
@@ -58,16 +60,19 @@ win = turtle.Screen()
 win.setup(width=600,height=300)
 win.bgcolor('black')
 ball = window.Turtle()
+ball.hideturtle()
 ball.shape('ball.gif')
 ball.color('#fff')
 ball.direction = 'stop'
 ball.speed = 100
 ball.penup()
+ball.goto((random.randint(-6,6)*100),(random.randint(-3,3)*100))
 ball.a = True
 ball.status = 'yes'
 ball.invinsible = 'no'
 ball.heart = 3
-
+ball.pr = 'resume'
+window.ontimer(ball.showturtle,2000)
 #hearts
 #````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 window.addshape('images/heart.gif')
@@ -142,11 +147,11 @@ seed.color('#f90233')
 #seed.hideturtle()
 seed.penup()
 seed.speed(1000)
-# seed.shapesize(1.6,1.6)
 seed.goto(1000,1000)
 seed.eaten = 'yes'
 seed.x_s = 0
 def write(msg):
+    txt.clear()
     txt.write(msg,align='center',font=('Mono space', 14, 'italic'))
     window.ontimer(txt.clear,3000)
 def shape_seed():
@@ -158,27 +163,30 @@ def shape_seed():
     window.ontimer(shape_seed,500)
 
 def summon_seed():
-    x = random.randint(-6,6)
-    y = random.randint(-3,3)
-    x = x*100
-    y = y*100
-    seed.goto(x,y)
-    seed.showturtle()
-    seed.eaten = 'no'
+    if seed.eaten != 'no':
+        x = random.randint(-6,6)
+        y = random.randint(-3,3)
+        x = x*100
+        y = y*100
+        seed.goto(x,y)
+        seed.showturtle()
+        seed.eaten = 'no'
+    window.ontimer(summon_seed,25000)
 def invinsiblity_over():
     ball.invinsible = 'no'
     ball.shape('ball.gif')
     write('Invinsiblity over')
 def seed_collosion():
-    if ball.xcor() + 2 > seed.xcor() - 10 and ball.xcor() - 2 < seed.xcor() + 10:
-        if ball.ycor() + 2 >seed.ycor() - 10 and ball.ycor() - 2 < seed.ycor() + 10:
-            seed.eaten = 'yes'
-            seed.goto(1000,1000)
-            ball.invinsible = 'yes'
-            write('The ball is now invinsible')
-            ball.shape('ball_invinsible.gif')
-            window.ontimer(invinsiblity_over,10000)
-            #summon_seed()
+    if ball.invinsible != 'yes':
+        if ball.xcor() + 2 > seed.xcor() - 10 and ball.xcor() - 2 < seed.xcor() + 10:
+            if ball.ycor() + 2 >seed.ycor() - 10 and ball.ycor() - 2 < seed.ycor() + 10:
+                seed.eaten = 'yes'
+                seed.goto(1000,1000)
+                ball.invinsible = 'yes'
+                write('The ball is now invinsible')
+                ball.shape('ball_invinsible.gif')
+                window.ontimer(invinsiblity_over,10000)
+                #summon_seed()
 
 
 
@@ -238,11 +246,20 @@ def boost():
 # msg1 = 'hello'
 # ball.write(msg1, align="center", font=("Mono Space",14,"bold"))
 # window.ontimer(ball.clear,1000)
-
+ball.position = pg.position()
     
 
 
-    
+def pause_resume(x,y):
+    if ball.pr == 'resume':
+        ball.pr = 'pause'
+        ball.position = pg.position()
+        
+    else:
+        ball.pr = 'resume'
+        
+        
+        
     
 
 
@@ -286,6 +303,7 @@ window.onkeypress(right, 'Right')
 window.onkeypress(boost,'0')
 
 ball.onclick(over)
+win.onclick(pause_resume,2)
 
 
 window.ontimer(time_over,5000)
@@ -293,26 +311,63 @@ window.ontimer(time_over,5000)
 def position():
     window.ontimer(position,1000)
 timer = 0
+ball.g_timer = random.randint(1000,2000)
 score = 0
 #position()
 shape_seed()
+
+ball.time_s = 0
+ball.time_m = 0
+def survival():
+    if ball.pr != 'pause':
+        ball.time_s += 1
+        if ball.time_s == 60:
+            ball.time_s = 0
+            ball.time_m += 1
+    window.ontimer(survival,1000)
+survival()
+
+
+time_t = window.Turtle()
+time_t.penup()
+time_t.goto(-600,300)
+time_t.color('white')
+time_t.hideturtle()
+
+def time_writer():
+    time_t.clear()
+    msg = str(ball.time_m) + ':' + str(ball.time_s)
+    time_t.write(msg,align='center',font=('Mono space', 20, 'bold'))
+    window.ontimer(time_writer,1000)
+time_writer()
+window.ontimer(summon_seed,20000)
 ################################################################################################################################
 while ball.a:
+    if ball.pr == 'pause':
+        while True:
+            pg.moveTo(ball.position)
+            seed.eaten = 'no'
+            window.update()
+            if ball.pr == 'resume':
+                seed.eaten = 'yes'
+                break
 #################################################################################################################################
+    '''
     if seed.eaten == 'yes':
         if ball.direction != 'stop':
             timer += 10
             
         timer += 1
-        if timer > 200:
-            if timer > random.randint(200,250):
+        if timer > 100:
+            if timer > ball.g_timer:
+                ball.g_timer = random.randint(100,200)
                 timer = 0
                 summon_seed()
 
     else:
         pass
-        seed_collosion()
-    
+        seed_collosion()'''
+    seed_collosion()
 #################################################################################################################################
     
     b.shapesize(b.l,b.w)
@@ -354,4 +409,4 @@ while ball.a:
     window.update()
 
 
-print(score)
+print(f'You survived {ball.time_m} minutes and {ball.time_s} seconds')
