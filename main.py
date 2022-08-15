@@ -1,10 +1,10 @@
+from fileinput import close
 import time
 import screens
 import turtle
 import random
-import pyautogui as pg
-
-
+import pyautogui
+from data import *
 
 window = turtle
 
@@ -163,7 +163,7 @@ def shape_seed():
     window.ontimer(shape_seed,500)
 
 def summon_seed():
-    if seed.eaten != 'no':
+    if seed.eaten != 'no' and ball.pr == 'resume':
         x = random.randint(-6,6)
         y = random.randint(-3,3)
         x = x*100
@@ -246,31 +246,31 @@ def boost():
 # msg1 = 'hello'
 # ball.write(msg1, align="center", font=("Mono Space",14,"bold"))
 # window.ontimer(ball.clear,1000)
-ball.position = pg.position()
-    
 
+    
+ball.po = 0
 
 def pause_resume(x,y):
     if ball.pr == 'resume':
         ball.pr = 'pause'
-        ball.position = pg.position()
-        
+        ball.po = pyautogui.position()
     else:
         ball.pr = 'resume'
         
         
-        
+        pyautogui.moveTo(ball.po)
     
 
-
+ball.g = True
 
         
 
 def over(x,y):
-    if ball.invinsible != 'yes':
+    if ball.invinsible != 'yes' and ball.pr == 'resume':
         ball.heart -= 1
         heart_count()
         if ball.heart == 0:
+            ball.g = False
             ball.hideturtle()
             write('GAME OVER')
             time.sleep(3)
@@ -278,9 +278,13 @@ def over(x,y):
             exit()
 
 
-
-    else:
+    elif ball.pr == 'pause':
+        write("""Don't try to be over smart 
+    The game is paused""")
+    elif ball.invinsible == 'yes':
         write('The ball is now invinsible')
+    else:
+        pass 
         
 
 #keys
@@ -319,7 +323,7 @@ shape_seed()
 ball.time_s = 0
 ball.time_m = 0
 def survival():
-    if ball.pr != 'pause':
+    if ball.pr != 'pause' and ball.g == True:
         ball.time_s += 1
         if ball.time_s == 60:
             ball.time_s = 0
@@ -345,11 +349,8 @@ window.ontimer(summon_seed,20000)
 while ball.a:
     if ball.pr == 'pause':
         while True:
-            pg.moveTo(ball.position)
-            seed.eaten = 'no'
             window.update()
             if ball.pr == 'resume':
-                seed.eaten = 'yes'
                 break
 #################################################################################################################################
     '''
@@ -408,5 +409,18 @@ while ball.a:
     
     window.update()
 
-
 print(f'You survived {ball.time_m} minutes and {ball.time_s} seconds')
+
+
+if minutes == 0 and ball.time_s > seconds:
+    seconds = ball.time_s
+    f = open('data.py',"w")
+    f.write(f'''minutes = 0
+seconds = {seconds}''')
+    f.close()
+if ball.time_m > minutes:
+    minutes = ball.time_m
+    f = open('data.py',"w")
+    f.write(f'''minutes = {minutes}
+seconds = {ball.time_s}''')
+    f.close()
